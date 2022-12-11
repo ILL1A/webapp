@@ -8,10 +8,10 @@ _OBJS = server.o $(OBJ)
 OBJS = $(patsubst %, $(ODIR)/%, $(_OBJS))
 
 server: $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+	$(CC) $(CFLAGS) -o target/$@ $(OBJS)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(ODIR)/*.o server
+	rm -f $(ODIR)/*.o target/server
