@@ -25,5 +25,5 @@ int main(int argc, char* argv[]) {
 		error("incorrect port");
 		return 0;
 	}
-	info("listening on port: " + to_string(port));
+	info("listening on port: %d", port);
 }

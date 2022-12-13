@@ -4,6 +4,6 @@
 using namespace std;
 
 namespace logger {
-	void error(string msg);
-	void info(string msg);
+	void error(const char* fmt...);
+	void info(const char* fmt...);
 }
