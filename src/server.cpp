@@ -15,6 +15,7 @@ void connection_handler(Socket* client_socket) {
 	string message = "successfully responded";
 	Request* resp = new Request();
 	while ((resp = client_socket -> socket_read()) -> get_request_length() > 0) {
+		resp -> format();
 		info("server: got message from %s:%d: %s", client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port(), resp -> get_unformatted_request().c_str());
 		int bytes_count = client_socket -> socket_send(message);
 		info("server: send %d bytes to %s:%d", bytes_count, client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port());
