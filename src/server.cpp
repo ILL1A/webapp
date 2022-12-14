@@ -13,8 +13,6 @@ using namespace http_request;
 
 void send_response(Response* response, Socket* client_socket) {
 	string str_response = response -> generate_str();
-	info("body: %s", response -> get_response_body().c_str());
-	info("generated response: %s", str_response.c_str());
 	int bytes_count = client_socket -> socket_send(str_response);
 	info("server: send %d bytes to %s:%d", bytes_count, client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port());
 }
