@@ -1,18 +1,15 @@
 #include <iostream> 
 #include <string>
-#include <regex> 
 #include "include/logger.h"
+#include "include/validator.h"
 
 using namespace std;
 using namespace logger;
+using namespace validator;
 
 int get_port(const char* str) {
-	regex port("^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$");
-	if (regex_match(str, port)) {
-		return atoi(str);
-	} else {
-		return -1;
-	}
+	if (port_validate(str)) return atoi(str);
+	else return -1;
 }
 
 int main(int argc, char* argv[]) {
