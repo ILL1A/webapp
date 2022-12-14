@@ -1,5 +1,5 @@
-#ifndef _FORMAT_H_
-#define _FORMAT_H_ 1
+#ifndef _EXCHANGE_H_
+#define _EXCHANGE_H_ 1
 #include <iostream>
 #include <vector>
 
@@ -25,8 +25,8 @@ namespace http_request {
 		const string get_request_method() const {
 			return method_;
 		}
-		const string get_request_path() const {
-			return path_;
+		const string get_request_route() const {
+			return route_;
 		}
 		const string get_http_version() const {
 			return http_version_;
@@ -41,11 +41,28 @@ namespace http_request {
 		int request_length_;
 		string unformatted_request_;
 		string method_;
-		string path_;
+		string route_;
 		string http_version_;
 		vector<Header*> headers_;
 		string body_;
 	};
+	class Response {
+	public:
+		Response();
+		void add_main(string http_version, string status_code);
+		void add_body(string body);
+		void add_header(string key, string value);
+		string generate_str();
+		const string get_response_body() const {
+			return body_;
+		}
+	private:
+		string http_version_;
+		string status_code_;
+		vector<Header*> headers_;
+		string body_;
+	};
+	string render_file(string path);
 }
 
-#endif // _FORMAT_H_
+#endif // _EXCHANGE_H_

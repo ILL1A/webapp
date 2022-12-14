@@ -2,23 +2,61 @@
 #include <string>
 #include <thread>
 #include "include/logger.h"
-#include "include/validator.h"
+#include "include/comparator.h"
 #include "include/socket.h"
-#include "include/format.h"
+#include "include/exchange.h"
 
 using namespace std;
 using namespace logger;
-using namespace validator;
+using namespace comparator;
 using namespace http_request;
 
+void send_response(Response* response, Socket* client_socket) {
+	string str_response = response -> generate_str();
+	info("body: %s", response -> get_response_body().c_str());
+	info("generated response: %s", str_response.c_str());
+	int bytes_count = client_socket -> socket_send(str_response);
+	info("server: send %d bytes to %s:%d", bytes_count, client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port());
+}
+
 void connection_handler(Socket* client_socket) {
-	string message = "successfully responded";
 	Request* resp = new Request();
 	while ((resp = client_socket -> socket_read()) -> get_request_length() > 0) {
 		resp -> format();
-		info("server: got message from %s:%d: %s", client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port(), resp -> get_unformatted_request().c_str());
-		int bytes_count = client_socket -> socket_send(message);
-		info("server: send %d bytes to %s:%d", bytes_count, client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port());
+		info("server: got message from %s:%d: %d bytes", client_socket -> get_socket_host().c_str(), client_socket -> get_socket_port(), resp -> get_unformatted_request().size());
+		info("route: %s", resp -> get_request_route().c_str());
+		string route = resp -> get_request_route();
+		if (check_start("/static/styles", route)) {
+			route.erase(0, 1);
+			Response* response = new Response();
+			response -> add_main(resp -> get_http_version(), "200 OK");
+			response -> add_body(render_file(route));
+			response -> add_header("Content-Type", "text/css");
+			response -> add_header("Content-Length", to_string((response -> get_response_body()).size()));
+			send_response(response, client_socket);
+		} else if (check_start("/static/scripts", route)) {
+			route.erase(0, 1);
+			Response* response = new Response();
+			response -> add_main(resp -> get_http_version(), "200 OK");
+			response -> add_body(render_file(route));
+			response -> add_header("Content-Type", "text/javascript");
+			response -> add_header("Content-Length", to_string((response -> get_response_body()).size()));
+			send_response(response, client_socket);
+		} else if (route == "/") {
+			Response* response = new Response();
+			response -> add_main(resp -> get_http_version(), "200 OK");
+			response -> add_body(render_file("templates/index.html"));
+			response -> add_header("Content-Type", "text/html");
+			response -> add_header("Content-Length", to_string((response -> get_response_body()).size()));
+			send_response(response, client_socket);
+		} else {
+			Response* response = new Response();
+			response -> add_main(resp -> get_http_version(), "404 Not Found");
+			response -> add_body(render_file("templates/404.html"));
+			response -> add_header("Content-Type", "text/html");
+			response -> add_header("Content-Length", to_string((response -> get_response_body()).size()));
+			send_response(response, client_socket);
+		}
 	}
 }
 

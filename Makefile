@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -std=c++20
 ODIR = obj
 SDIR = src
-OBJ = logger.o validator.o socket.o format.o
+OBJ = logger.o comparator.o socket.o exchange.o
 
 _OBJS = server.o $(OBJ)
 OBJS = $(patsubst %, $(ODIR)/%, $(_OBJS))
